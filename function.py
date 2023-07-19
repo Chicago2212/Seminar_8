@@ -8,7 +8,7 @@ def delete():
                            'Введите номер файла от 1 до 3: '))
         loading()
 
-    with open(f'db/data{answer}.txt', 'r', encoding='utf-8') as file:
+    with open(f'C:/Users/Sergei/Desktop//Python(seminar)/Seminar_8/db/data{answer}.txt', 'r', encoding='utf-8') as file:
         data = file.readlines()
         number = int(data[-1].split(';')[0])
 
@@ -27,7 +27,7 @@ def delete():
         row = f'{count};' + data[i][data[i].index(';') + 1:]
         count += 1
         result.append(row)
-    with open(f'db/data{answer}.txt', 'w', encoding='utf-8') as file:
+    with open(f'C:/Users/Sergei/Desktop//Python(seminar)/Seminar_8/db/data{answer}.txt', 'w', encoding='utf-8') as file:
         file.writelines(result)
 
     print('___________________________\n'
@@ -50,14 +50,15 @@ def add():
     surname = input("|\n| Введите фамилию: ")
     phone = input("|\n| Введите номер телефона: ")  # При необходимости можно добавить проверку на телефон с помощью регулярных выражений
     city = input("|\n| Введите город: ")
-    with open(f'db/data{answer}.txt', 'r', encoding='utf-8') as file:
+    ans = str(input("Ведите знак через которой сохранять"))
+    with open(f'C:/Users/Sergei/Desktop//Python(seminar)/Seminar_8/db/data{answer}.txt', 'r', encoding='utf-8') as file:
         data = file.readlines()
         if data:
             number = int(data[-1].split(';')[0])
         else:
             number = 0
-    with open(f'db/data{answer}.txt', 'w', encoding='utf-8') as file:
-        file.writelines(data + [f'{number + 1};{name};{surname};{phone};{city}'])
+    with open(f'C:/Users/Sergei/Desktop//Python(seminar)/Seminar_8/db/data{answer}.txt', 'w', encoding='utf-8') as file:
+        file.writelines (data + [f'{number + 1}{ans}{name}{ans}{surname}{ans}{phone}{ans}{city}'])
 
     print('___________________________\n'
           'Данные успешно записаны!')
@@ -72,7 +73,7 @@ def change():
                            'ERROR! Ошибка, скорее всего, Вы указали неправильное число.\n'
                            'Введите номер файла от 1 до 3: '))
         loading()
-    with open(f'db/data{answer}.txt', 'r', encoding='utf-8') as file:
+    with open(f'C:/Users/Sergei/Desktop//Python(seminar)/Seminar_8/db/data{answer}.txt', 'r', encoding='utf-8') as file:
         data = file.readlines()
         number = int(data[-1].split(';')[0])
 
@@ -118,7 +119,7 @@ def change():
         else:
             city = input("Введите город: ")
 
-    with open(f'db/data{answer}.txt', 'r', encoding='utf-8') as file:
+    with open(f'C:/Users/Sergei/Desktop//Python(seminar)/Seminar_8/db/data{answer}.txt', 'r', encoding='utf-8') as file:
         database = file.readlines()
         data = database[number_row - 1]
     print(data)
@@ -131,7 +132,7 @@ def change():
     if city is None:
         city = data.split(';')[4]
 
-    with open(f'db/data{answer}.txt', 'w', encoding='utf-8') as file:
+    with open(f'C:/Users/Sergei/Desktop//Python(seminar)/Seminar_8/db/data{answer}.txt', 'w', encoding='utf-8') as file:
         file.writelines(database[:number_row - 1] + [f"{data.split(';')[0]};{name};{surname};{phone};{city}"] +
                         database[number_row + 1:])
 
@@ -151,7 +152,7 @@ def clear():
 
     print("___________________________\n"
           "Отлично! Происходит очистка файла, подождите :)")
-    open(f'db/data{answer}.txt', 'w').close()
+    open(f'C:/Users/Sergei/Desktop//Python(seminar)/Seminar_8/db/data{answer}.txt', 'w').close()
     loading()
     print('___________________________\n'
           f'Файл {answer} успешно очищен!')
@@ -176,12 +177,12 @@ def loading():
 
 def terminate():
     for i in range(1, 4):
-        open(f'db/data{i}.txt', 'w').close()
+        open(f'C:/Users/Sergei/Desktop//Python(seminar)/Seminar_8/db/data{i}.txt', 'w').close()
 
 
 def printdata():
     for i in range(1, 4):
-        with open(f'db/data{i}.txt', 'r', encoding='utf-8') as file:
+        with open(f'C:/Users/Sergei/Desktop//Python(seminar)/Seminar_8/db/data{i}.txt', 'r', encoding='utf-8') as file:
             print("___________________________\n"
                   f"Вывожу данные из {i}-го файла:")
             data = [[j if '\n' not in j else j.split('\n')[0] for j in i.split(';')] for i in file.readlines()]
