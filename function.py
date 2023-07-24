@@ -20,7 +20,7 @@ def delete():
                                'ERROR! Ошибка, скорее всего, Вы указали неправильное число.\n'
                                f'Введите номер строки от 1 до {number}: '))
 
-    del data[number_row]
+    del data[number_row - 1]
     count = 1
     result = list()
     for i in range(number - 1):
@@ -50,7 +50,28 @@ def add():
     surname = input("|\n| Введите фамилию: ")
     phone = input("|\n| Введите номер телефона: ")  # При необходимости можно добавить проверку на телефон с помощью регулярных выражений
     city = input("|\n| Введите город: ")
+
+    print("Выберите знак, через который будет вестись действие:\n"
+          "___________________________\n"
+          "1. ,\n"
+          "2. ;\n"
+          "3. -\n")
+    ans = int(input("___________________________\nВведите номер знака: "))
+    dic_a = { 1:',', 2: ';', 3: '-'}
+
     with open(f'db/data{answer}.txt', 'r', encoding='utf-8') as file:
+        data = file.readlines()
+        if data:
+            number = int(data[-1].split(dic_a[ans])[0])
+        else:
+            number = 0
+    with open(f'db/data{answer}.txt', 'w', encoding='utf-8') as file:
+        file.writelines(data + [f'{number + 1}{dic_a[ans]}{name}{dic_a[ans]}{surname}{dic_a[ans]}{phone}{dic_a[ans]}{city}\n'])
+
+    print('___________________________\n'
+          'Данные успешно записаны!')
+
+    '''with open(f'db/data{answer}.txt', 'r', encoding='utf-8') as file:
         data = file.readlines()
         if data:
             number = int(data[-1].split(';')[0])
@@ -60,7 +81,7 @@ def add():
         file.writelines(data + [f'{number + 1};{name};{surname};{phone};{city}'])
 
     print('___________________________\n'
-          'Данные успешно записаны!')
+          'Данные успешно записаны!')'''
 
 
 def change():
