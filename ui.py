@@ -9,22 +9,44 @@ from function import (
     terminate,
 )
 
+menu = """\
+Выберите действие:
+___________________________
+1. Удалить запись.
+2. Добавить запись.
+3. Изменить запись.
+4. Вывести данные.
+5. Очистить файл.
+6. Выход."""
+
+delete_prompt = """\
+Желаю всего доброго! \
+Не забывай, что все данные, которые ты записал, они сохранились.
+Удалить? (ОТВЕТЬТЕ ДА/НЕТ): """
+
+greeting_message = """\
+***************************  \
+Добро пожаловать!  \
+***************************"""
+
+answer_error = """\
+ERROR! Ошибка, скорее всего, Вы указали неправильное число.\n
+Введите значение от 1 до 6."""
+
+separator = "___________________________"
+input_prompt = "Введите номер действия: "
+delete_confirmation_message = "Данные успешно удалены!"
+farewell_message = "Всего доброго!"
+
 
 def interface():
-    print(
-        "***************************  Добро пожаловать!\t ***************************\n"
-        "Выберите действие:\n"
-        "___________________________\n"
-        "1. Удалить запись.\n"
-        "2. Добавить запись.\n"
-        "3. Изменить запись.\n"
-        "4. Вывести данные.\n"
-        "5. Очистить файл.\n"
-        "6. Выход."
-    )
-    answer = int(input("___________________________\nВведите номер действия: "))
+    print(greeting_message)
+    print(menu)
+    print(separator)
+
+    answer = request_answer()
     loading()
-    answer = check_numbers(answer)
+
     while answer != 6:
         if answer == 1:
             delete()
@@ -36,29 +58,29 @@ def interface():
             printdata()
         elif answer == 5:
             clear()
-        print(
-            "Выберите действие:\n"
-            "___________________________\n"
-            "1. Удалить запись.\n"
-            "2. Добавить запись.\n"
-            "3. Изменить запись.\n"
-            "4. Вывести данные.\n"
-            "5. Очистить файл.\n"
-            "6. Выход."
-        )
-        answer = int(input("___________________________\nВведите номер действия: "))
-        answer = check_numbers(answer)
+        print(menu)
+        print(separator)
+        answer = request_answer()
 
-    answer = input(
-        "___________________________\n"
-        "Желаю всего доброго! Не забывай, что все данные, которые ты записал, они сохранились.\n"
-        "Удалить? (ОТВЕТЬТЕ ДА/НЕТ): "
-    ).lower()
-    if answer in ["да", "yes"]:
+    print(separator)
+    answer = input(delete_prompt)
+    print(separator)
+
+    if answer.lower() in ["да", "yes"]:
         terminate()
-        print(
-            "___________________________\n" "Данные успешно удалены!" "Всего доброго!\n"
-        )
-    else:
-        print("___________________________\n" "Всего доброго!")
+        print(delete_confirmation_message)
+
+    print(farewell_message)
     exit()
+
+
+def request_answer():
+    answer = int(input(input_prompt))
+
+    while not check_numbers(answer):
+        print(answer_error)
+        print(menu)
+        print(separator)
+        answer = int(input(input_prompt))
+
+    return answer
