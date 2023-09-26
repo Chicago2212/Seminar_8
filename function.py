@@ -58,114 +58,15 @@ def add_to_file(file_num, parameters):
     write_file(file_num, data_list)
 
 
-def change():
-    printdata()
-    answer = int(
-        input(
-            "___________________________\n"
-            "Выберите в каком файле Вы хотите изменить запись: "
-        )
-    )
-    while answer < 1 or answer > 3:
-        answer = int(
-            input(
-                "___________________________\n"
-                "ERROR! Ошибка, скорее всего, Вы указали неправильное число.\n"
-                "Введите номер файла от 1 до 3: "
-            )
-        )
-        loading()
-    with open(f"db/data{answer}.txt", "r", encoding="utf-8") as file:
-        data = file.readlines()
-        number = int(get_data_list(data[-1])[0])
+def change_line(file_num, line, parameters):
+    data = read_file(file_num)
+    data_list = get_data_list(data)
 
-    number_row = int(
-        input(
-            "___________________________\n"
-            f"Отлично! Будем изменять данные из {answer}-файла.\n"
-            f"Выбери номер строки от 1 до {number}: "
-        )
-    )
-    while number_row < 1 or number_row > number:
-        number_row = int(
-            input(
-                "___________________________\n"
-                "ERROR! Ошибка, скорее всего, Вы указали неправильное число.\n"
-                f"Введите номер строки от 1 до {number}: "
-            )
-        )
-        loading()
-    answer_list = list(
-        map(
-            int,
-            input(
-                "___________________________\n"
-                "Отлично! Выбери данные, которые Вы хотите поменять:\n"
-                "1 - Имя,\n"
-                "2 - Фамилия,\n"
-                "3 - Телефон,\n"
-                "4 - Город\n"
-                "Примечание: Если Вы хотите изменить несколько данных одновременно, "
-                "то запишите номера через пробел.\n"
-                "Ввод: "
-            ).split(),
-        )
-    )
-    while sum([int(1 <= i <= 4) for i in answer_list]) != len(set(answer_list)):
-        answer_list = list(
-            map(
-                int,
-                input(
-                    "___________________________\n"
-                    "Отлично! Выбери данные, которые Вы хотите поменять:\n"
-                    "1 - Имя,\n"
-                    "2 - Фамилия,\n"
-                    "3 - Телефон,\n"
-                    "4 - Город\n"
-                    "Примечание: Если Вы хотите изменить несколько данных одновременно, "
-                    "то запишите номера через пробел.\n"
-                    "Ввод: "
-                ).split(),
-            )
-        )
-        loading()
-    name = None
-    surname = None
-    phone = None
-    city = None
-    for i in answer_list:
-        if i == 1:
-            name = input("Введите имя: ")
-        elif i == 2:
-            surname = input("Введите фамилию: ")
-        elif i == 3:
-            phone = input("Введите номер телефона: ")
-        else:
-            city = input("Введите город: ")
+    for i in range(len(parameters)):
+        if parameters[i] != "":
+            data_list[line - 1][i + 1] = parameters[i]
 
-    with open(f"db/data{answer}.txt", "r", encoding="utf-8") as file:
-        database = file.readlines()
-        data = database[number_row - 1]
-    print(data)
-    if name is None:
-        name = data.split(get_separator(data))[1]
-    if surname is None:
-        surname = data.split(get_separator(data))[2]
-    if phone is None:
-        phone = data.split(get_separator(data))[3]
-    if city is None:
-        city = data.split(get_separator(data))[4]
-
-    with open(f"db/data{answer}.txt", "w", encoding="utf-8") as file:
-        file.writelines(
-            database[: number_row - 1]
-            + [
-                f"{data.split(get_separator(data))[0]}{sep}{name}{sep}{surname}{sep}{phone}{sep}{city}"
-            ]
-            + database[number_row + 1 :]
-        )
-
-    print("___________________________\n" "Данные успешно изменены!")
+    write_file(file_num, data_list)
 
 
 def clear():

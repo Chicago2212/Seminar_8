@@ -10,6 +10,24 @@ ___________________________
 5. Очистить файл.
 6. Выход."""
 
+change_prompt = """\
+Отлично! Выбери данные, которые Вы хотите поменять:
+1 - Имя,
+2 - Фамилия,
+3 - Телефон,
+4 - Город
+Примечание: Если Вы хотите изменить несколько данных одновременно, \
+то запишите номера через пробел.
+Ввод: """
+
+parameters_prompts = [
+    "Введите имя: ",
+    "Введите фамилию: ",
+    "Введите номер телефона: ",
+    "Введите город: ",
+    "Введите разделитель(  - . ; ,  ): ",
+]
+
 delete_prompt = """\
 Желаю всего доброго! \
 Не забывай, что все данные, которые ты записал, они сохранились.
@@ -31,10 +49,12 @@ underscores = "___________________________"
 action_prompt = "Введите номер действия: "
 file_delete_prompt = "Выберите из какого файла Вы хотите удалить данные: "
 file_add_prompt = "Выберите файл, в который Вы хотите добавить строку: "
+file_change_prompt = "Выберите в каком файле Вы хотите изменить запись: "
+file_choice_msg = "Отлично! Будем {action} данные из {file_num}-файла."
+line_prompt = "{action} номер строки от 1 до {line_count}: "
 
-del_confirm_msg = "Данные успешно удалены!"
+success_msg = "Данные успешно {action}!"
 del_success_msg = "Удаление успешно завершено!"
-write_success_msg = "Данные успешно записаны!"
 
 
 def interface():
@@ -48,7 +68,7 @@ def interface():
         elif action == 2:
             add()
         elif action == 3:
-            function.change()
+            change()
         elif action == 4:
             function.printdata()
         elif action == 5:
@@ -62,7 +82,7 @@ def interface():
 
     if action.lower() in ["да", "yes"]:
         function.terminate()
-        print(del_confirm_msg)
+        print(success_msg.format(action="удалены"))
 
     print(farewell_msg)
     exit()
@@ -80,7 +100,7 @@ def choose_action():
     return answer
 
 
-def choose_file(prompt):
+def choose_file(prompt, action):
     print(underscores)
     answer = int(input(prompt))
 
@@ -89,29 +109,32 @@ def choose_file(prompt):
         answer = int(input(file_answer_err))
         function.loading()
 
+    print(
+        underscores,
+        file_choice_msg.format(action=action, file_num=answer),
+        sep="\n",
+    )
+
     return answer
 
 
-def choose_line(line_count):
-    line = int(input(f"Выбери номер строки от 1 до {line_count}: "))
+def choose_line(file_num):
+    line_count = len(function.read_file(file_num))
+    prompt = line_prompt.format(action="Выбери", line_count=line_count)
+    line = int(input(prompt))
 
     while line < 1 or line > line_count:
+        prompt = line_prompt.format(action="Введите", line_count=line_count)
         print(answer_error)
-        line = int(input(f"Введите номер строки от 1 до {line_count}: "))
+        line = int(input(prompt))
 
     return line
 
 
 def delete():
     function.printdata()
-    file_num = choose_file(file_delete_prompt)
-    print(
-        underscores,
-        f"Отлично! Будем удалять данные из {file_num}-файла.",
-        sep="\n",
-    )
-    line_count = len(function.read_file(file_num))
-    line = choose_line(line_count)
+    file_num = choose_file(file_delete_prompt, "удалять")
+    line = choose_line(file_num)
     function.delete_line(file_num, line)
 
     print(underscores, del_success_msg, sep="\n")
@@ -123,23 +146,46 @@ def add():
     parameters = choose_add_parameters()
     function.add_to_file(file_num, parameters)
 
-    print(underscores, write_success_msg, sep="\n")
+    msg = success_msg.format(action="записаны")
+    print(underscores, msg, sep="\n")
 
 
 def choose_add_parameters():
-    prompts = [
-        "Введите имя: ",
-        "Введите фамилию: ",
-        "Введите номер телефона: ",
-        "Введите город: ",
-        "Введите разделитель(  - . ; ,  ): ",
-    ]
-
     print(underscores, "|", sep="\n")
 
     answers = list()
-    for prompt in prompts:
+    for prompt in parameters_prompts:
         print("|")
         answers.append(input("| " + prompt))
 
     return answers
+
+
+def change():
+    function.printdata()
+
+    file_num = choose_file(file_change_prompt, "изменять")
+    line = choose_line(file_num)
+    values = choose_new_values()
+    function.change_line(file_num, line, values)
+
+    msg = success_msg.format(action="изменены")
+    print(underscores, msg, sep="\n")
+
+
+def choose_new_values():
+    values = list()
+    fields = [0]
+
+    while min(fields) < 1 or max(fields) > 4:
+        print(underscores)
+        fields = list(map(int, input(change_prompt).split()))
+
+    for i in range(4):
+        if i + 1 in fields:
+            answer = input(parameters_prompts[i])
+        else:
+            answer = ""
+        values.append(answer)
+
+    return values
