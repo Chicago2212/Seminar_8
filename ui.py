@@ -61,6 +61,7 @@ success_msg = "Данные успешно {action}!"
 del_success_msg = "Удаление успешно завершено!"
 file_clear_msg = "Отлично! Происходит очистка файла, подождите :)"
 clear_success_msg = "Файл {file_num} успешно очищен!"
+print_msg = "Вывожу данные из {i}-го файла:"
 
 
 def interface():
@@ -76,7 +77,7 @@ def interface():
         elif action == 3:
             change()
         elif action == 4:
-            function.printdata()
+            function.print_data()
         elif action == 5:
             clear()
         print(menu, underscores, sep="\n")
@@ -139,7 +140,7 @@ def choose_line(file_num):
 
 
 def delete():
-    function.printdata()
+    function.print_data()
     file_num = choose_file(file_delete_prompt, "удалять")
     line = choose_line(file_num)
     function.delete_line(file_num, line)
@@ -148,7 +149,7 @@ def delete():
 
 
 def add():
-    function.printdata()
+    function.print_data()
     file_num = choose_file(file_add_prompt, "")
     parameters = choose_add_parameters()
     function.add_to_file(file_num, parameters)
@@ -169,7 +170,7 @@ def choose_add_parameters():
 
 
 def change():
-    function.printdata()
+    function.print_data()
 
     file_num = choose_file(file_change_prompt, "изменять")
     line = choose_line(file_num)
@@ -199,7 +200,7 @@ def choose_new_values():
 
 
 def clear():
-    function.printdata()
+    function.print_data()
     file_num = choose_file(file_clear_prompt, "")
     print(underscores, file_clear_msg, sep="\n")
     function.clear_file(file_num)
@@ -228,3 +229,7 @@ def loading():
         time.sleep(0.01)
 
     print("\n")
+
+
+def print_data():
+    print(underscores, )

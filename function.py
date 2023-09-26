@@ -15,11 +15,11 @@ def write_file(file_num, data_list):
             )
 
 
-def get_separator(data):
+def get_separator(line):
     separators = [".", ";", ",", "-"]
 
     for separator in separators:
-        if separator in data:
+        if separator in line:
             return separator
 
     return None
@@ -30,7 +30,7 @@ def get_data_list(data):
     for line in data:
         separator = get_separator(line)
         if separator is not None:
-            line_list = line.split(separator)
+            line_list = line.rstrip("\n").split(separator)
             line_list.append(separator)
             data_list.append(line_list)
         else:
@@ -78,32 +78,28 @@ def clear_all_files():
         clear_file(i)
 
 
-def printdata():
-    for i in range(1, 4):
-        with open(f"db/data{i}.txt", "r", encoding="utf-8") as file:
-            print("___________________________\n" f"Вывожу данные из {i}-го файла:")
-            data = [
-                [
-                    j if "\n" not in j else j.split("\n")[0]
-                    for j in i.split(get_separator(i))
-                ]
-                for i in file.readlines()
-            ]
-            if len(data) == 0:
-                print("Файл пустой!")
-            else:
-                columns = ["Номер", "Имя", "Фамилия", "Телефон", "Город"]
-                max_columns = []
-                for col in zip(*data):
-                    len_el = []
-                    [len_el.append(len(el)) for el in col]
-                    max_columns.append(max(len_el))
-                for column in columns:
-                    print(f"{column:{max(max_columns) + 1}}", end="")
+def print_data():
+    for i in range(3):
+        data = read_file(i + 1)
+        if len(data) == 0:
+            print("Файл пустой!")
+        else:
+            fields = ["Номер", "Имя", "Фамилия", "Телефон", "Город"]
+            data_list = get_data_list(data)
+
+            max_strlen = 0
+
+            for line in data_list:
+                for field in line:
+                    if len(field) > max_strlen:
+                        max_strlen = len(field)
+
+            for field in fields:
+                print(f"{field:{max_strlen}}", end=" ")
+            print("\n" + "=" * max_strlen * len(fields))
+
+            for line in data_list:
+                for element in line[:-1]:
+                    print(f"{element:{max_strlen}}", end=" ")
                 print()
-                print(f'{"=" * max(max_columns) * 5}')
-                for el in data:
-                    for col in el:
-                        print(f"{col:{max(max_columns) + 1}}", end="")
-                    print()
-                print("\n")
+        print()
