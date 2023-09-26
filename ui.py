@@ -30,9 +30,11 @@ underscores = "___________________________"
 
 action_prompt = "Введите номер действия: "
 file_delete_prompt = "Выберите из какого файла Вы хотите удалить данные: "
+file_add_prompt = "Выберите файл, в который Вы хотите добавить строку: "
 
 del_confirm_msg = "Данные успешно удалены!"
 del_success_msg = "Удаление успешно завершено!"
+write_success_msg = "Данные успешно записаны!"
 
 
 def interface():
@@ -44,7 +46,7 @@ def interface():
         if action == 1:
             delete()
         elif action == 2:
-            function.add()
+            add()
         elif action == 3:
             function.change()
         elif action == 4:
@@ -113,3 +115,31 @@ def delete():
     function.delete_line(file_num, line)
 
     print(underscores, del_success_msg, sep="\n")
+
+
+def add():
+    function.printdata()
+    file_num = choose_file(file_add_prompt)
+    parameters = choose_add_parameters()
+    function.add_to_file(file_num, parameters)
+
+    print(underscores, write_success_msg, sep="\n")
+
+
+def choose_add_parameters():
+    prompts = [
+        "Введите имя: ",
+        "Введите фамилию: ",
+        "Введите номер телефона: ",
+        "Введите город: ",
+        "Введите разделитель(  - . ; ,  ): ",
+    ]
+
+    print(underscores, "|", sep="\n")
+
+    answers = list()
+    for prompt in prompts:
+        print("|")
+        answers.append(input("| " + prompt))
+
+    return answers

@@ -4,11 +4,14 @@ def read_file(file_num):
     return data
 
 
-def write_file(file_num, data, separator):
+def write_file(file_num, data_list):
     with open(f"db/data{file_num}.txt", "w", encoding="utf-8") as file_object:
-        for i in range(len(data)):
+        for i in range(len(data_list)):
+            line_separator = data_list[i][-1]
             file_object.write(
-                separator.join(data[i][j] for j in range(len(data[0])))
+                line_separator.join(
+                    data_list[i][j] for j in range(len(data_list[i]) - 1)
+                )
             )
 
 
@@ -16,72 +19,43 @@ def get_separator(data):
     separators = [".", ";", ",", "-"]
 
     for separator in separators:
-        if separator in data[0]:
+        if separator in data:
             return separator
 
     return None
 
 
-def delete_line(file_num, line):
+def get_data_list(data):
     data_list = list()
-    data = read_file(file_num)
-    separator = get_separator(data)
+    for line in data:
+        separator = get_separator(line)
+        if separator is not None:
+            line_list = line.split(separator)
+            line_list.append(separator)
+            data_list.append(line_list)
+        else:
+            data_list.append(line)
+    return data_list
 
-    if separator is not None:
-        data_list = [line.split(separator) for line in data]
-    else:
-        data_list = data
+
+def delete_line(file_num, line):
+    data = read_file(file_num)
+    data_list = get_data_list(data)
 
     del data_list[line - 1]
 
     for i in range(line - 1, len(data_list)):
         data_list[i][0] = str(i + 1)
 
-    write_file(file_num, data_list, separator)
+    write_file(file_num, data_list)
 
 
-sep = ""
-
-
-def add():
-    global sep
-    printdata()
-    answer = int(
-        input(
-            "___________________________\n"
-            "Выберите файла, в который Вы хотите добавить строку: "
-        )
-    )
-    while answer < 1 or answer > 3:
-        answer = int(
-            input(
-                "___________________________\n"
-                "ERROR! Ошибка, скорее всего, Вы указали неправильное число.\n"
-                "Введите номер файла от 1 до 3: "
-            )
-        )
-        loading()
-
-    print("___________________________\n" "|")
-    name = input("|\n| Введите имя: ")
-    surname = input("|\n| Введите фамилию: ")
-    phone = input(
-        "|\n| Введите номер телефона: "
-    )  # При необходимости можно добавить проверку на телефон с помощью регулярных выражений
-    city = input("|\n| Введите город: ")
-    sep = input("|\n| Введите разделитель(  - . ; ,  ): ")
-    with open(f"db/data{answer}.txt", "r", encoding="utf-8") as file:
-        data = file.readlines()
-        if data:
-            number = int(get_data_list(data[-1])[0])
-        else:
-            number = 0
-    with open(f"db/data{answer}.txt", "w", encoding="utf-8") as file:
-        file.writelines(
-            data + [f"{number + 1}{sep}{name}{sep}{surname}{sep}{phone}{sep}{city}\n"]
-        )
-
-    print("___________________________\n" "Данные успешно записаны!")
+def add_to_file(file_num, parameters):
+    data = read_file(file_num)
+    data_list = get_data_list(data)
+    parameters.insert(0, str(int(data_list[-1][0]) + 1))
+    data_list.append(parameters)
+    write_file(file_num, data_list)
 
 
 def change():
