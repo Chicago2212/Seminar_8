@@ -1,3 +1,6 @@
+import sys
+import time
+
 import function
 
 menu = """\
@@ -16,7 +19,7 @@ change_prompt = """\
 2 - Фамилия,
 3 - Телефон,
 4 - Город
-Примечание: Если Вы хотите изменить несколько данных одновременно, \
+Примечание: Если Вы хотите изменить несколько данных одновременно,\
 то запишите номера через пробел.
 Ввод: """
 
@@ -48,6 +51,7 @@ underscores = "___________________________"
 
 action_prompt = "Введите номер действия: "
 file_delete_prompt = "Выберите из какого файла Вы хотите удалить данные: "
+file_clear_prompt = "Выберите какой файл Вы хотите очистить: "
 file_add_prompt = "Выберите файл, в который Вы хотите добавить строку: "
 file_change_prompt = "Выберите в каком файле Вы хотите изменить запись: "
 file_choice_msg = "Отлично! Будем {action} данные из {file_num}-файла."
@@ -55,6 +59,8 @@ line_prompt = "{action} номер строки от 1 до {line_count}: "
 
 success_msg = "Данные успешно {action}!"
 del_success_msg = "Удаление успешно завершено!"
+file_clear_msg = "Отлично! Происходит очистка файла, подождите :)"
+clear_success_msg = "Файл {file_num} успешно очищен!"
 
 
 def interface():
@@ -72,7 +78,7 @@ def interface():
         elif action == 4:
             function.printdata()
         elif action == 5:
-            function.clear()
+            clear()
         print(menu, underscores, sep="\n")
         action = choose_action()
 
@@ -81,7 +87,7 @@ def interface():
     print(underscores)
 
     if action.lower() in ["да", "yes"]:
-        function.terminate()
+        function.clear_all_files()
         print(success_msg.format(action="удалены"))
 
     print(farewell_msg)
@@ -90,12 +96,12 @@ def interface():
 
 def choose_action():
     answer = int(input(action_prompt))
-    function.loading()
+    loading()
 
     while answer < 1 or answer > 6:
         print(answer_error, action_answer_err, menu, underscores, sep="\n")
         answer = int(input(action_prompt))
-        function.loading()
+        loading()
 
     return answer
 
@@ -107,13 +113,14 @@ def choose_file(prompt, action):
     while answer < 1 or answer > 3:
         print(underscores, answer_error, sep="\n")
         answer = int(input(file_answer_err))
-        function.loading()
+        loading()
 
-    print(
-        underscores,
-        file_choice_msg.format(action=action, file_num=answer),
-        sep="\n",
-    )
+    if action != "":
+        print(
+            underscores,
+            file_choice_msg.format(action=action, file_num=answer),
+            sep="\n",
+        )
 
     return answer
 
@@ -142,7 +149,7 @@ def delete():
 
 def add():
     function.printdata()
-    file_num = choose_file(file_add_prompt)
+    file_num = choose_file(file_add_prompt, "")
     parameters = choose_add_parameters()
     function.add_to_file(file_num, parameters)
 
@@ -189,3 +196,35 @@ def choose_new_values():
         values.append(answer)
 
     return values
+
+
+def clear():
+    function.printdata()
+    file_num = choose_file(file_clear_prompt, "")
+    print(underscores, file_clear_msg, sep="\n")
+    function.clear_file(file_num)
+    loading()
+    msg = clear_success_msg.format(file_num=file_num)
+    print(underscores, msg, sep="\n")
+
+
+def loading():
+    animation = [
+        "■□□□□□□□□□",
+        "■■□□□□□□□□",
+        "■■■□□□□□□□",
+        "■■■■□□□□□□",
+        "■■■■■□□□□□",
+        "■■■■■■□□□□",
+        "■■■■■■■□□□",
+        "■■■■■■■■□□",
+        "■■■■■■■■■□",
+        "■■■■■■■■■■",
+    ]
+
+    for i in range(len(animation)):
+        sys.stdout.write(animation[i] + f" {(i + 1) * 10}%\r")
+        sys.stdout.flush()
+        time.sleep(0.01)
+
+    print("\n")

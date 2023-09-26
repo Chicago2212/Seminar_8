@@ -69,72 +69,13 @@ def change_line(file_num, line, parameters):
     write_file(file_num, data_list)
 
 
-def clear():
-    printdata()
-    answer = int(
-        input(
-            "___________________________\n" "Выберите какой файл Вы хотите очистить: "
-        )
-    )
-    while answer < 1 or answer > 3:
-        answer = int(
-            input(
-                "___________________________\n"
-                "ERROR! Ошибка, скорее всего, Вы указали неправильное число.\n"
-                "Введите номер файла от 1 до 3: "
-            )
-        )
-        loading()
-
-    print(
-        "___________________________\n"
-        "Отлично! Происходит очистка файла, подождите :)"
-    )
-    open(f"db/data{answer}.txt", "w").close()
-    loading()
-    print("___________________________\n" f"Файл {answer} успешно очищен!")
+def clear_file(file_num):
+    open(f"db/data{file_num}.txt", "w").close()
 
 
-def loading():
-    import time
-    import sys
-
-    animationproc = [
-        "10%",
-        "20%",
-        "30%",
-        "40%",
-        "50%",
-        "60%",
-        "70%",
-        "80%",
-        "90%",
-        "100%",
-    ]
-    animation = [
-        "■□□□□□□□□□",
-        "■■□□□□□□□□",
-        "■■■□□□□□□□",
-        "■■■■□□□□□□",
-        "■■■■■□□□□□",
-        "■■■■■■□□□□",
-        "■■■■■■■□□□",
-        "■■■■■■■■□□",
-        "■■■■■■■■■□",
-        "■■■■■■■■■■",
-    ]
-
-    for i in range(len(animation)):
-        time.sleep(0.05)
-        sys.stdout.write("\r" + animation[i % len(animation)] + f" {animationproc[i]}")
-        sys.stdout.flush()
-
-    print("\n")
-
-
-def terminate():
+def clear_all_files():
     for i in range(1, 4):
-        open(f"db/data{i}.txt", "w").close()
+        clear_file(i)
 
 
 def printdata():
@@ -166,4 +107,3 @@ def printdata():
                         print(f"{col:{max(max_columns) + 1}}", end="")
                     print()
                 print("\n")
-        loading()
