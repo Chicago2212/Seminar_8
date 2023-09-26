@@ -1,12 +1,12 @@
 from function import (
-    delete,
+    delete_line,
     add,
     change,
     printdata,
     clear,
     loading,
-    check_numbers,
     terminate,
+    read_file,
 )
 
 menu = """\
@@ -24,63 +24,101 @@ delete_prompt = """\
 Не забывай, что все данные, которые ты записал, они сохранились.
 Удалить? (ОТВЕТЬТЕ ДА/НЕТ): """
 
-greeting_message = """\
+greeting_msg = """\
 ***************************  \
 Добро пожаловать!  \
 ***************************"""
 
-answer_error = """\
-ERROR! Ошибка, скорее всего, Вы указали неправильное число.\n
-Введите значение от 1 до 6."""
+farewell_msg = "Всего доброго!"
 
-separator = "___________________________"
-input_prompt = "Введите номер действия: "
-delete_confirmation_message = "Данные успешно удалены!"
-farewell_message = "Всего доброго!"
+answer_error = "ERROR! Ошибка, скорее всего, Вы указали неправильное число."
+action_answer_err = "Введите значение от 1 до 6." ""
+file_answer_err = "Введите номер файла от 1 до 3: "
+
+underscores = "___________________________"
+
+action_prompt = "Введите номер действия: "
+file_delete_prompt = "Выберите из какого файла Вы хотите удалить данные: "
+delete_confirm_msg = "Данные успешно удалены!"
 
 
 def interface():
-    print(greeting_message)
-    print(menu)
-    print(separator)
+    print(greeting_msg, menu, underscores, sep="\n")
 
-    answer = request_answer()
-    loading()
+    action = choose_action()
 
-    while answer != 6:
-        if answer == 1:
+    while action != 6:
+        if action == 1:
             delete()
-        elif answer == 2:
+        elif action == 2:
             add()
-        elif answer == 3:
+        elif action == 3:
             change()
-        elif answer == 4:
+        elif action == 4:
             printdata()
-        elif answer == 5:
+        elif action == 5:
             clear()
-        print(menu)
-        print(separator)
-        answer = request_answer()
+        print(menu, underscores, sep="\n")
+        action = choose_action()
 
-    print(separator)
-    answer = input(delete_prompt)
-    print(separator)
+    print(underscores)
+    action = input(delete_prompt)
+    print(underscores)
 
-    if answer.lower() in ["да", "yes"]:
+    if action.lower() in ["да", "yes"]:
         terminate()
-        print(delete_confirmation_message)
+        print(delete_confirm_msg)
 
-    print(farewell_message)
+    print(farewell_msg)
     exit()
 
 
-def request_answer():
-    answer = int(input(input_prompt))
+def choose_action():
+    answer = int(input(action_prompt))
+    loading()
 
-    while not check_numbers(answer):
-        print(answer_error)
-        print(menu)
-        print(separator)
-        answer = int(input(input_prompt))
+    while answer < 1 or answer > 6:
+        print(answer_error, action_answer_err, menu, underscores, sep="\n")
+        answer = int(input(action_prompt))
+        loading()
 
     return answer
+
+
+def choose_file(prompt):
+    print(underscores)
+    answer = int(input(prompt))
+
+    while answer < 1 or answer > 3:
+        print(underscores, answer_error, sep="\n")
+        answer = int(input(file_answer_err))
+        loading()
+
+    return answer
+
+
+def choose_line(line_count):
+    line = int(input(f"Выбери номер строки от 1 до {line_count}: "))
+
+    while line < 1 or line > line_count:
+        print(answer_error)
+        line = int(input(f"Введите номер строки от 1 до {line_count}: "))
+
+    return line
+
+
+def delete():
+    success_msg = "Удаление успешно завершено!"
+
+    printdata()
+    file_num = choose_file(file_delete_prompt)
+    print(
+        underscores,
+        f"Отлично! Будем удалять данные из {file_num}-файла.",
+        sep="\n",
+    )
+    line_count = len(read_file(file_num))
+    line = choose_line(line_count)
+    delete_line(file_num, line)
+
+    print(underscores, success_msg, sep="\n")

@@ -1,67 +1,43 @@
-separator = [".", ";", ",", "-"]
+def read_file(file_num):
+    with open(f"db/data{file_num}.txt", "r", encoding="utf-8") as file_object:
+        data = file_object.readlines()
+    return data
 
 
-def data_remake(data):
-    global separator
-    index_separator = data.split(separator[[i in data for i in separator].index(True)])
-    return index_separator
-
-
-def delete():
-    printdata()
-    answer = int(
-        input(
-            "___________________________\n"
-            "Выберите из какого файла Вы хотите удалить данные: "
-        )
-    )
-    while answer < 1 or answer > 3:
-        answer = int(
-            input(
-                "___________________________\n"
-                "ERROR! Ошибка, скорее всего, Вы указали неправильное число.\n"
-                "Введите номер файла от 1 до 3: "
+def write_file(file_num, data, separator):
+    with open(f"db/data{file_num}.txt", "w", encoding="utf-8") as file_object:
+        for i in range(len(data)):
+            file_object.write(
+                separator.join(data[i][j] for j in range(len(data[0])))
             )
-        )
-        loading()
 
-    with open(f"db/data{answer}.txt", "r", encoding="utf-8") as file:
-        data = file.readlines()
-        number = int(data_remake(data[-1])[0])
 
-    number_row = int(
-        input(
-            "___________________________\n"
-            f"Отлично! Будем удалять данные из {answer}-файла.\n"
-            f"Выбери номер строки от 1 до {number}: "
-        )
-    )
-    while number_row < 1 or number_row > number:
-        number_row = int(
-            input(
-                "___________________________\n"
-                "ERROR! Ошибка, скорее всего, Вы указали неправильное число.\n"
-                f"Введите номер строки от 1 до {number}: "
-            )
-        )
+def get_separator(data):
+    separators = [".", ";", ",", "-"]
 
-    del data[number_row]
-    count = 1
-    result = list()
-    for i in range(number - 1):
-        row = (
-            f"{count};"
-            + data[i][
-                data[i].index(separator[[i in data for i in separator].index(True)])
-                + 1:
-            ]
-        )
-        count += 1
-        result.append(row)
-    with open(f"db/data{answer}.txt", "w", encoding="utf-8") as file:
-        file.writelines(result)
+    for separator in separators:
+        if separator in data[0]:
+            return separator
 
-    print("___________________________\n" "Удаление успешно завершено!")
+    return None
+
+
+def delete_line(file_num, line):
+    data_list = list()
+    data = read_file(file_num)
+    separator = get_separator(data)
+
+    if separator is not None:
+        data_list = [line.split(separator) for line in data]
+    else:
+        data_list = data
+
+    del data_list[line - 1]
+
+    for i in range(line - 1, len(data_list)):
+        data_list[i][0] = str(i + 1)
+
+    write_file(file_num, data_list, separator)
 
 
 sep = ""
@@ -97,15 +73,12 @@ def add():
     with open(f"db/data{answer}.txt", "r", encoding="utf-8") as file:
         data = file.readlines()
         if data:
-            number = int(data_remake(data[-1])[0])
+            number = int(get_data_list(data[-1])[0])
         else:
             number = 0
     with open(f"db/data{answer}.txt", "w", encoding="utf-8") as file:
         file.writelines(
-            data
-            + [
-                f"{number + 1}{sep}{name}{sep}{surname}{sep}{phone}{sep}{city}\n"
-            ]
+            data + [f"{number + 1}{sep}{name}{sep}{surname}{sep}{phone}{sep}{city}\n"]
         )
 
     print("___________________________\n" "Данные успешно записаны!")
@@ -130,7 +103,7 @@ def change():
         loading()
     with open(f"db/data{answer}.txt", "r", encoding="utf-8") as file:
         data = file.readlines()
-        number = int(data_remake(data[-1])[0])
+        number = int(get_data_list(data[-1])[0])
 
     number_row = int(
         input(
@@ -201,21 +174,21 @@ def change():
         data = database[number_row - 1]
     print(data)
     if name is None:
-        name = data.split(separator[[i in data for i in separator].index(True)])[1]
+        name = data.split(get_separator(data))[1]
     if surname is None:
-        surname = data.split(separator[[i in data for i in separator].index(True)])[2]
+        surname = data.split(get_separator(data))[2]
     if phone is None:
-        phone = data.split(separator[[i in data for i in separator].index(True)])[3]
+        phone = data.split(get_separator(data))[3]
     if city is None:
-        city = data.split(separator[[i in data for i in separator].index(True)])[4]
+        city = data.split(get_separator(data))[4]
 
     with open(f"db/data{answer}.txt", "w", encoding="utf-8") as file:
         file.writelines(
             database[: number_row - 1]
             + [
-                f"{data.split(separator[[i in data for i in separator].index(True)])[0]}{sep}{name}{sep}{surname}{sep}{phone}{sep}{city}"
+                f"{data.split(get_separator(data))[0]}{sep}{name}{sep}{surname}{sep}{phone}{sep}{city}"
             ]
-            + database[number_row + 1:]
+            + database[number_row + 1 :]
         )
 
     print("___________________________\n" "Данные успешно изменены!")
@@ -277,7 +250,7 @@ def loading():
     ]
 
     for i in range(len(animation)):
-        time.sleep(0.2)
+        time.sleep(0.05)
         sys.stdout.write("\r" + animation[i % len(animation)] + f" {animationproc[i]}")
         sys.stdout.flush()
 
@@ -296,7 +269,7 @@ def printdata():
             data = [
                 [
                     j if "\n" not in j else j.split("\n")[0]
-                    for j in i.split(separator[[k in i for k in separator].index(True)])
+                    for j in i.split(get_separator(i))
                 ]
                 for i in file.readlines()
             ]
@@ -319,22 +292,3 @@ def printdata():
                     print()
                 print("\n")
         loading()
-
-
-def check_numbers(answer):
-    while answer < 1 or answer > 6:
-        print(
-            "ERROR! Ошибка, скорее всего, Вы указали неправильное число.\n"
-            "Введите значение от 1 до 6.\n"
-            "Выберите действие:\n"
-            "___________________________\n"
-            "1. Удалить запись.\n"
-            "2. Добавить запись.\n"
-            "3. Изменить запись.\n"
-            "4. Вывести данные.\n"
-            "5. Очистить файл.\n"
-            "6. Выход."
-        )
-        answer = int(input("___________________________\nВведите номер действия: "))
-        loading()
-    return answer
