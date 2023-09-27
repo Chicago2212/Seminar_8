@@ -69,15 +69,15 @@ def interface():
 
     while action != 6:
         if action == 1:
-            delete()
+            get_delete_params()
         elif action == 2:
-            add()
+            get_add_params()
         elif action == 3:
-            change()
+            get_change_params()
         elif action == 4:
             function.print_data()
         elif action == 5:
-            clear()
+            get_clear_params()
         print_menu()
         action = choose_action()
 
@@ -93,6 +93,55 @@ def interface():
     exit()
 
 
+def get_delete_params():
+    function.print_data()
+
+    file_num = choose_file(output["file_delete_prompt"], "удалять")
+    line = choose_line(file_num)
+
+    function.delete_line(file_num, line)
+
+    print(output["underscores"], output["del_success_msg"], sep="\n")
+
+
+def get_add_params():
+    function.print_data()
+
+    file_num = choose_file(output["file_add_prompt"], "")
+    parameters = choose_add_parameters()
+
+    function.add_to_file(file_num, parameters)
+
+    msg = output["success_msg"].format(action="записаны")
+    print(output["underscores"], msg, sep="\n")
+
+
+def get_change_params():
+    function.print_data()
+
+    file_num = choose_file(output["file_change_prompt"], "изменять")
+    line = choose_line(file_num)
+    values = choose_new_values()
+
+    function.change_line(file_num, line, values)
+
+    msg = output["success_msg"].format(action="изменены")
+    print(output["underscores"], msg, sep="\n")
+
+
+def get_clear_params():
+    function.print_data()
+    file_num = choose_file(output["file_clear_prompt"], "")
+
+    print(output["underscores"], output["file_clear_msg"], sep="\n")
+
+    function.clear_file(file_num)
+
+    loading()
+    msg = output["clear_success_msg"].format(file_num=file_num)
+    print(output["underscores"], msg, sep="\n")
+
+
 def choose_action():
     answer = int(input(output["action_prompt"]))
     loading()
@@ -100,7 +149,9 @@ def choose_action():
     while answer < 1 or answer > 6:
         print(output["answer_error"], output["action_answer_err"], sep="\n")
         print_menu()
+
         answer = int(input(output["action_prompt"]))
+
         loading()
 
     return answer
@@ -128,33 +179,16 @@ def choose_file(prompt, action):
 def choose_line(file_num):
     line_count = len(function.read_file(file_num))
     prompt = output["line_prompt"].format(action="Выбери", line_count=line_count)
+
     line = int(input(prompt))
 
     while line < 1 or line > line_count:
         prompt = output["line_prompt"].format(action="Введите", line_count=line_count)
         print(output["answer_error"])
+
         line = int(input(prompt))
 
     return line
-
-
-def delete():
-    function.print_data()
-    file_num = choose_file(output["file_delete_prompt"], "удалять")
-    line = choose_line(file_num)
-    function.delete_line(file_num, line)
-
-    print(output["underscores"], output["del_success_msg"], sep="\n")
-
-
-def add():
-    function.print_data()
-    file_num = choose_file(output["file_add_prompt"], "")
-    parameters = choose_add_parameters()
-    function.add_to_file(file_num, parameters)
-
-    msg = output["success_msg"].format(action="записаны")
-    print(output["underscores"], msg, sep="\n")
 
 
 def choose_add_parameters():
@@ -166,18 +200,6 @@ def choose_add_parameters():
         answers.append(input("| " + prompt))
 
     return answers
-
-
-def change():
-    function.print_data()
-
-    file_num = choose_file(output["file_change_prompt"], "изменять")
-    line = choose_line(file_num)
-    values = choose_new_values()
-    function.change_line(file_num, line, values)
-
-    msg = output["success_msg"].format(action="изменены")
-    print(output["underscores"], msg, sep="\n")
 
 
 def choose_new_values():
@@ -196,16 +218,6 @@ def choose_new_values():
         values.append(answer)
 
     return values
-
-
-def clear():
-    function.print_data()
-    file_num = choose_file(output["file_clear_prompt"], "")
-    print(output["underscores"], output["file_clear_msg"], sep="\n")
-    function.clear_file(file_num)
-    loading()
-    msg = output["clear_success_msg"].format(file_num=file_num)
-    print(output["underscores"], msg, sep="\n")
 
 
 def loading():
