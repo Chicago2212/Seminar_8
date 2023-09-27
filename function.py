@@ -108,12 +108,12 @@ def print_data():
 
             fields = ui.output["fields"]
             for field in fields:
-                print(f"{field:{max_strlen}}", end=" ")
+                print(f"{field:^{max_strlen}}", end=" ")
             print("\n" + "=" * max_strlen * len(fields))
 
             for line in data_list:
                 for element in line[:-1]:
-                    print(f"{element:{max_strlen}}", end=" ")
+                    print(f"{element:^{max_strlen}}", end=" ")
                 print()
             print("\n")
         ui.loading()
