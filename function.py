@@ -7,8 +7,8 @@ def read_file(file_num):
     return data
 
 
-def write_file(file_num, data_list):
-    with open(f"db/data{file_num}.txt", "w", encoding="utf-8") as file_object:
+def write_file(file_num, data_list, mode):
+    with open(f"db/data{file_num}.txt", mode, encoding="utf-8") as file_object:
         for i in range(len(data_list)):
             line_separator = data_list[i][-1]
             file_object.write(
@@ -51,7 +51,7 @@ def delete_line(file_num, line):
     for i in range(line - 1, len(data_list)):
         data_list[i][0] = str(i + 1)
 
-    write_file(file_num, data_list)
+    write_file(file_num, data_list, "w")
 
 
 def add_to_file(file_num, parameters):
@@ -64,7 +64,7 @@ def add_to_file(file_num, parameters):
 
     parameters.insert(0, position)
     data_list.append(parameters)
-    write_file(file_num, data_list)
+    write_file(file_num, data_list, "w")
 
 
 def change_line(file_num, line, parameters):
@@ -75,7 +75,22 @@ def change_line(file_num, line, parameters):
         if parameters[i] != "":
             data_list[line - 1][i + 1] = parameters[i]
 
-    write_file(file_num, data_list)
+    write_file(file_num, data_list, "w")
+
+
+def move_data(source_file, target_file):
+    data = read_file(source_file)
+    data_list = get_data_list(data)
+
+    line_num = len(read_file(target_file))
+
+    if data_list:
+        for i in range(len(data_list)):
+            line_num += 1
+            data_list[i][0] = str(line_num)
+
+    write_file(target_file, data_list, "a")
+    clear_file(source_file)
 
 
 def clear_file(file_num):
