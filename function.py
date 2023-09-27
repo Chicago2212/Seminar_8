@@ -106,7 +106,7 @@ def print_data():
     for i in range(3):
         print(
             ui.output["underscores"],
-            ui.output["print_msg"].format(file_num=i+1),
+            ui.output["print_msg"].format(file_num=i + 1),
             sep="\n",
         )
         data = read_file(i + 1)
