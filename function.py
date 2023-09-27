@@ -1,3 +1,6 @@
+import ui
+
+
 def read_file(file_num):
     with open(f"db/data{file_num}.txt", "r", encoding="utf-8") as file_object:
         data = file_object.readlines()
@@ -12,6 +15,7 @@ def write_file(file_num, data_list):
                 line_separator.join(
                     data_list[i][j] for j in range(len(data_list[i]) - 1)
                 )
+                + "\n"
             )
 
 
@@ -53,7 +57,12 @@ def delete_line(file_num, line):
 def add_to_file(file_num, parameters):
     data = read_file(file_num)
     data_list = get_data_list(data)
-    parameters.insert(0, str(int(data_list[-1][0]) + 1))
+
+    position = "1"
+    if data:
+        position = str(int(data_list[-1][0]) + 1)
+
+    parameters.insert(0, position)
     data_list.append(parameters)
     write_file(file_num, data_list)
 
@@ -80,13 +89,16 @@ def clear_all_files():
 
 def print_data():
     for i in range(3):
+        print(
+            ui.output["underscores"],
+            ui.output["print_msg"].format(file_num=i+1),
+            sep="\n",
+        )
         data = read_file(i + 1)
         if len(data) == 0:
-            print("Файл пустой!")
+            print(ui.output["empty_file"])
         else:
-            fields = ["Номер", "Имя", "Фамилия", "Телефон", "Город"]
             data_list = get_data_list(data)
-
             max_strlen = 0
 
             for line in data_list:
@@ -94,6 +106,7 @@ def print_data():
                     if len(field) > max_strlen:
                         max_strlen = len(field)
 
+            fields = ui.output["fields"]
             for field in fields:
                 print(f"{field:{max_strlen}}", end=" ")
             print("\n" + "=" * max_strlen * len(fields))
@@ -102,4 +115,5 @@ def print_data():
                 for element in line[:-1]:
                     print(f"{element:{max_strlen}}", end=" ")
                 print()
-        print()
+            print("\n")
+        ui.loading()
