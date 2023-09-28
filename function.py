@@ -1,80 +1,133 @@
 separator = ['.', ';', ',', '-']
 
 
+def data_transfer():
+    printdata()
+    answer_from = int(input('___________________________\n'
+                            'Выберите из какого файла Вы хотите перенести данные данные: '))
+
+    flag = True
+    while flag:
+        while answer_from < 1 or answer_from > 3:
+            answer_from = int(input('___________________________\n'
+                                    'ERROR! Ошибка, скорее всего, Вы указали неправильное число или файл пустой.\n'
+                                    'Введите номер файла от 1 до 3: '))
+        with open(f'db/data{answer_from}.txt', 'r') as from_file:
+            data = from_file.readlines()
+        if not data:
+            answer_from = int(input('___________________________\n'
+                                    'ERROR! Ошибка, скорее всего, Вы указали пустой файл.\n'
+                                    'Введите номер файла от 1 до 3: '))
+        else:
+            flag = False
+    answer_in = int(input('___________________________\n'
+                          'Выберите в какой файл Вы хотите перенести данные: '))
+    while answer_in < 1 or answer_in > 3 or answer_in == answer_from:
+        answer_in = int(input('___________________________\n'
+                              'ERROR! Ошибка, скорее всего, Вы указали неправильное число.\n'
+                              f'Введите номер файла от 1 до 3 кроме {answer_from}: '))
+        loading()
+
+    for i in range(len(data)):
+        add(answer_in, data[i])
+    delete(answer_in)
+    clear(answer_from)
+    loading()
+    print('___________________________\n'
+          'Данные успешно перенесены!')
+
+
 def data_remake(data):
     global separator
     index_separator = data.split(separator[[i in data for i in separator].index(True)])
     return index_separator
 
 
-def delete():
-    printdata()
-    answer = int(input('___________________________\n'
-                       'Выберите из какого файла Вы хотите удалить данные: '))
-    while answer < 1 or answer > 3:
+def delete(answer=None):
+    if not answer:
+        printdata()
         answer = int(input('___________________________\n'
-                           'ERROR! Ошибка, скорее всего, Вы указали неправильное число.\n'
-                           'Введите номер файла от 1 до 3: '))
-        loading()
-
-    with open(f'db/data{answer}.txt', 'r', encoding='utf-8') as file:
-        data = file.readlines()
-        number = int(data_remake(data[-1])[0])
-
-    number_row = int(input("___________________________\n"
-                           f"Отлично! Будем удалять данные из {answer}-файла.\n"
-                           f"Выбери номер строки от 1 до {number}: "))
-    while number_row < 1 or number_row > number:
-        number_row = int(input('___________________________\n'
+                           'Выберите из какого файла Вы хотите удалить данные: '))
+        while answer < 1 or answer > 3:
+            answer = int(input('___________________________\n'
                                'ERROR! Ошибка, скорее всего, Вы указали неправильное число.\n'
-                               f'Введите номер строки от 1 до {number}: '))
+                               'Введите номер файла от 1 до 3: '))
+            loading()
 
-    del data[number_row]
-    count = 1
+        with open(f'db/data{answer}.txt', 'r', encoding='utf-8') as file:
+            data = file.readlines()
+            number = int(data_remake(data[-1])[0])
+
+        number_row = int(input("___________________________\n"
+                               f"Отлично! Будем удалять данные из {answer}-файла.\n"
+                               f"Выбери номер строки от 1 до {number}: "))
+        while number_row < 1 or number_row > number:
+            number_row = int(input('___________________________\n'
+                                   'ERROR! Ошибка, скорее всего, Вы указали неправильное число.\n'
+                                   f'Введите номер строки от 1 до {number}: '))
+        print('___________________________\n'
+              'Удаление успешно завершено!')
+
+        del data[number_row - 1]
+    else:
+        with open(f'db/data{answer}.txt', 'r', encoding='utf-8') as file:
+            data = file.readlines()
+            number = int(data_remake(data[-1])[0])
+
     result = list()
-    for i in range(number - 1):
-        row = f'{count};' + data[i][data[i].index(separator[[i in data for i in separator].index(True)]) + 1:]
-        count += 1
+    for i in range(len(data)):
+        row = f'{i + 1}' + data[i][[i in separator for i in [i for i in data[i]]].index(True):]
         result.append(row)
     with open(f'db/data{answer}.txt', 'w', encoding='utf-8') as file:
         file.writelines(result)
-
-    print('___________________________\n'
-          'Удаление успешно завершено!')
 
 
 razdelitel = ''
 
 
-def add():
-    global razdelitel
-    printdata()
-    answer = int(input('___________________________\n'
-                       'Выберите файла, в который Вы хотите добавить строку: '))
-    while answer < 1 or answer > 3:
+def add(file_num=None, list_data=None):
+    if not file_num:
+        global razdelitel
+        printdata()
         answer = int(input('___________________________\n'
-                           'ERROR! Ошибка, скорее всего, Вы указали неправильное число.\n'
-                           'Введите номер файла от 1 до 3: '))
-        loading()
+                           'Выберите файла, в который Вы хотите добавить строку: '))
+        while answer < 1 or answer > 3:
+            answer = int(input('___________________________\n'
+                               'ERROR! Ошибка, скорее всего, Вы указали неправильное число.\n'
+                               'Введите номер файла от 1 до 3: '))
+            loading()
 
-    print('___________________________\n'
-          '|')
-    name = input("|\n| Введите имя: ")
-    surname = input("|\n| Введите фамилию: ")
-    phone = input("|\n| Введите номер телефона: ")  # При необходимости можно добавить проверку на телефон с помощью регулярных выражений
-    city = input("|\n| Введите город: ")
-    razdelitel = input("|\n| Введите разделитель(  - . ; ,  ): ")
-    with open(f'db/data{answer}.txt', 'r', encoding='utf-8') as file:
-        data = file.readlines()
-        if data:
-            number = int(data_remake(data[-1])[0])
+        print('___________________________\n'
+              '|')
+        name = input("|\n| Введите имя: ")
+        surname = input("|\n| Введите фамилию: ")
+        phone = input(
+            "|\n| Введите номер телефона: ")  # При необходимости можно добавить проверку на телефон с помощью регулярных выражений
+        city = input("|\n| Введите город: ")
+        razdelitel = input("|\n| Введите разделитель(  - . ; ,  ): ")
+        print('___________________________\n'
+              'Данные успешно записаны!')
+        with open(f'db/data{answer}.txt', 'r', encoding='utf-8') as file:
+            data = file.readlines()
+            if data:
+                number = int(data_remake(data[-1])[0])
+            else:
+                number = 0
+        add_list = f'{number + 1}{razdelitel}{name}{razdelitel}{surname}{razdelitel}{phone}{razdelitel}{city}\n'
+    else:
+        answer = file_num
+        add_list = list_data
+        with open(f'db/data{answer}.txt', 'r', encoding='utf-8') as file:
+            data = file.readlines()
+    result = list()
+    for i in range(len(data)):
+        if list(data[i][-1]) != ['\n']:
+            result.append(data[i] + '\n')
         else:
-            number = 0
+            result.append(data[i])
+    result.append(add_list)
     with open(f'db/data{answer}.txt', 'w', encoding='utf-8') as file:
-        file.writelines(data + [f'{number + 1}{razdelitel}{name}{razdelitel}{surname}{razdelitel}{phone}{razdelitel}{city}\n'])
-
-    print('___________________________\n'
-          'Данные успешно записаны!')
+        file.writelines(result)
 
 
 def change():
@@ -147,29 +200,31 @@ def change():
 
     with open(f'db/data{answer}.txt', 'w', encoding='utf-8') as file:
         file.writelines(database[:number_row - 1] +
-                        [f"{data.split(separator[[i in data for i in separator].index(True)])[0]}{razdelitel}{name}{razdelitel}{surname}{razdelitel}{phone}{razdelitel}{city}"] +
+                        [
+                            f"{data.split(separator[[i in data for i in separator].index(True)])[0]}{razdelitel}{name}{razdelitel}{surname}{razdelitel}{phone}{razdelitel}{city}"] +
                         database[number_row + 1:])
 
     print('___________________________\n'
           'Данные успешно изменены!')
 
 
-def clear():
-    printdata()
-    answer = int(input('___________________________\n'
-                       'Выберите какой файл Вы хотите очистить: '))
-    while answer < 1 or answer > 3:
+def clear(answer=None):
+    if not answer:
+        printdata()
         answer = int(input('___________________________\n'
-                           'ERROR! Ошибка, скорее всего, Вы указали неправильное число.\n'
-                           'Введите номер файла от 1 до 3: '))
-        loading()
+                           'Выберите какой файл Вы хотите очистить: '))
+        while answer < 1 or answer > 3:
+            answer = int(input('___________________________\n'
+                               'ERROR! Ошибка, скорее всего, Вы указали неправильное число.\n'
+                               'Введите номер файла от 1 до 3: '))
+            loading()
 
-    print("___________________________\n"
-          "Отлично! Происходит очистка файла, подождите :)")
+        print("___________________________\n"
+              "Отлично! Происходит очистка файла, подождите :)")
+        loading()
+        print('___________________________\n'
+              f'Файл {answer} успешно очищен!')
     open(f'db/data{answer}.txt', 'w').close()
-    loading()
-    print('___________________________\n'
-          f'Файл {answer} успешно очищен!')
 
 
 def loading():
@@ -199,7 +254,8 @@ def printdata():
         with open(f'db/data{i}.txt', 'r', encoding='utf-8') as file:
             print("___________________________\n"
                   f"Вывожу данные из {i}-го файла:")
-            data = [[j if '\n' not in j else j.split('\n')[0] for j in i.split(separator[[k in i for k in separator].index(True)])] for i in file.readlines()]
+            data = [[j if '\n' not in j else j.split('\n')[0] for j in
+                     i.split(separator[[k in i for k in separator].index(True)])] for i in file.readlines()]
             if len(data) == 0:
                 print("Файл пустой!")
             else:
@@ -222,7 +278,7 @@ def printdata():
 
 
 def check_numbers(answer):
-    while answer < 1 or answer > 6:
+    while answer < 1 or answer > 7:
         print("ERROR! Ошибка, скорее всего, Вы указали неправильное число.\n"
               "Введите значение от 1 до 6.\n"
               "Выберите действие:\n"
@@ -232,7 +288,8 @@ def check_numbers(answer):
               "3. Изменить запись.\n"
               "4. Вывести данные.\n"
               "5. Очистить файл.\n"
-              "6. Выход.")
+              "6. Перенести данные.\n"
+              "7. Выход.")
         answer = int(input("___________________________\nВведите номер действия: "))
         loading()
     return answer
