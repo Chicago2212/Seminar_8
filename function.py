@@ -1,4 +1,23 @@
+import os
+
 separator = ['.', ';', ',', '-']
+
+def move_data(source_file_name, destination_file_name):
+    
+    current_directory = os.getcwd()
+
+    source_file = os.path.join(current_directory, r'Seminar_8\db', source_file_name)
+    destination_file = os.path.join(current_directory, r'Seminar_8\db', destination_file_name)
+    print(source_file, destination_file)
+    
+    try:
+        with open(source_file, 'r') as source, open(destination_file, 'a') as destination:
+            destination.write(source.read())
+        print("Данные успешно перенесены из", source_file, "в", destination_file)
+    except FileNotFoundError:
+        print("Ошибка: Один из файлов не найден.")
+    except Exception as e:
+        print("Произошла ошибка при переносе данных:", str(e))
 
 
 def data_remake(data):
@@ -222,9 +241,9 @@ def printdata():
 
 
 def check_numbers(answer):
-    while answer < 1 or answer > 6:
+    while answer < 1 or answer > 7:
         print("ERROR! Ошибка, скорее всего, Вы указали неправильное число.\n"
-              "Введите значение от 1 до 6.\n"
+              "Введите значение от 1 до 7.\n"
               "Выберите действие:\n"
               "___________________________\n"
               "1. Удалить запись.\n"
@@ -232,7 +251,8 @@ def check_numbers(answer):
               "3. Изменить запись.\n"
               "4. Вывести данные.\n"
               "5. Очистить файл.\n"
-              "6. Выход.")
+              "6. Перенести данные из одного файла в другой.\n"  # Новый пункт меню
+              "7. Выход.")
         answer = int(input("___________________________\nВведите номер действия: "))
         loading()
     return answer
