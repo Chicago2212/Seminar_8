@@ -1,3 +1,5 @@
+import os
+current_directory = os.getcwd()
 separator = ['.', ';', ',', '-']
 
 
@@ -17,7 +19,8 @@ def delete():
                            'Введите номер файла от 1 до 3: '))
         loading()
 
-    with open(f'db/data{answer}.txt', 'r', encoding='utf-8') as file:
+    path = os.path.join(f'{current_directory}', 'db', f'data{answer}.txt')
+    with open(path, 'r', encoding='utf-8') as file:
         data = file.readlines()
         number = int(data_remake(data[-1])[0])
 
@@ -36,7 +39,8 @@ def delete():
         row = f'{count};' + data[i][data[i].index(separator[[i in data for i in separator].index(True)]) + 1:]
         count += 1
         result.append(row)
-    with open(f'db/data{answer}.txt', 'w', encoding='utf-8') as file:
+    
+    with open(path, 'w', encoding='utf-8') as file:
         file.writelines(result)
 
     print('___________________________\n'
@@ -50,7 +54,7 @@ def add():
     global razdelitel
     printdata()
     answer = int(input('___________________________\n'
-                       'Выберите файла, в который Вы хотите добавить строку: '))
+                       'Выберите номер файла, в который Вы хотите добавить строку: '))
     while answer < 1 or answer > 3:
         answer = int(input('___________________________\n'
                            'ERROR! Ошибка, скорее всего, Вы указали неправильное число.\n'
@@ -64,13 +68,14 @@ def add():
     phone = input("|\n| Введите номер телефона: ")  # При необходимости можно добавить проверку на телефон с помощью регулярных выражений
     city = input("|\n| Введите город: ")
     razdelitel = input("|\n| Введите разделитель(  - . ; ,  ): ")
-    with open(f'db/data{answer}.txt', 'r', encoding='utf-8') as file:
+    path = os.path.join(f'{current_directory}', 'db', f'data{answer}.txt')
+    with open(path, 'r', encoding='utf-8') as file:
         data = file.readlines()
         if data:
             number = int(data_remake(data[-1])[0])
         else:
             number = 0
-    with open(f'db/data{answer}.txt', 'w', encoding='utf-8') as file:
+    with open(path, 'w', encoding='utf-8') as file:
         file.writelines(data + [f'{number + 1}{razdelitel}{name}{razdelitel}{surname}{razdelitel}{phone}{razdelitel}{city}\n'])
 
     print('___________________________\n'
@@ -86,7 +91,8 @@ def change():
                            'ERROR! Ошибка, скорее всего, Вы указали неправильное число.\n'
                            'Введите номер файла от 1 до 3: '))
         loading()
-    with open(f'db/data{answer}.txt', 'r', encoding='utf-8') as file:
+    path = os.path.join(f'{current_directory}', 'db', f'data{answer}.txt')
+    with open(path, 'r', encoding='utf-8') as file:
         data = file.readlines()
         number = int(data_remake(data[-1])[0])
 
@@ -131,8 +137,8 @@ def change():
             phone = input("Введите номер телефона: ")
         else:
             city = input("Введите город: ")
-
-    with open(f'db/data{answer}.txt', 'r', encoding='utf-8') as file:
+    path = os.path.join(f'{current_directory}', 'db', f'data{answer}.txt')
+    with open(path, 'r', encoding='utf-8') as file:
         database = file.readlines()
         data = database[number_row - 1]
     print(data)
@@ -145,7 +151,8 @@ def change():
     if city is None:
         city = data.split(separator[[i in data for i in separator].index(True)])[4]
 
-    with open(f'db/data{answer}.txt', 'w', encoding='utf-8') as file:
+    path = os.path.join(f'{current_directory}', 'db', f'data{answer}.txt')
+    with open(path, 'w', encoding='utf-8') as file:
         file.writelines(database[:number_row - 1] +
                         [f"{data.split(separator[[i in data for i in separator].index(True)])[0]}{razdelitel}{name}{razdelitel}{surname}{razdelitel}{phone}{razdelitel}{city}"] +
                         database[number_row + 1:])
@@ -166,7 +173,8 @@ def clear():
 
     print("___________________________\n"
           "Отлично! Происходит очистка файла, подождите :)")
-    open(f'db/data{answer}.txt', 'w').close()
+    path = os.path.join(f'{current_directory}', 'db', f'data{answer}.txt')
+    open(path, 'w').close()
     loading()
     print('___________________________\n'
           f'Файл {answer} успешно очищен!')
@@ -191,14 +199,16 @@ def loading():
 
 def terminate():
     for i in range(1, 4):
-        open(f'db/data{i}.txt', 'w').close()
+        path = os.path.join(f'{current_directory}', 'db', f'data{i}.txt')
+        open(path, 'w').close()
 
 
 def printdata():
     for i in range(1, 4):
-        with open(f'db/data{i}.txt', 'r', encoding='utf-8') as file:
-            print("___________________________\n"
-                  f"Вывожу данные из {i}-го файла:")
+        path = os.path.join(f'{current_directory}', 'db', f'data{i}.txt')
+        with open(path, 'r', encoding='utf-8') as file:
+            print('___________________________\n'
+                  f'Вывожу данные из {i}-го файла:')
             data = [[j if '\n' not in j else j.split('\n')[0] for j in i.split(separator[[k in i for k in separator].index(True)])] for i in file.readlines()]
             if len(data) == 0:
                 print("Файл пустой!")
@@ -220,11 +230,39 @@ def printdata():
                 print('\n')
         loading()
 
+def transfer():
+    printdata()
+    answer1 = int(input('___________________________\n'
+                       'Выберите файл, из которого Вы хотите перенести данные: '))
+    while answer1 < 1 or answer1 > 3:
+        answer1 = int(input('___________________________\n'
+                           'ERROR! Ошибка, скорее всего, Вы указали неправильное число.\n'
+                           'Введите номер файла от 1 до 3: '))
+    answer2 = int(input('___________________________\n'
+                       'Выберите файл, в который Вы хотите перенести данные: '))
+    while answer2 < 1 or answer2 > 3:
+        answer2 = int(input('___________________________\n'
+                           'ERROR! Ошибка, скорее всего, Вы указали неправильное число.\n'
+                           'Введите номер файла от 1 до 3: '))
+        loading()
+    file_in = os.path.join(f'{current_directory}', 'db', f'data{answer1}.txt')
+    file_out = os.path.join(f'{current_directory}', 'db', f'data{answer2}.txt')
+    print(file_in, file_out)
+
+    try:
+        with open(file_in, 'r') as filein, open(file_out, 'a') as fileout:
+            fileout.write(filein.read())
+        loading()
+        print("Данные успешно перенесены из", f'data{answer1}.txt', "в", f'data{answer2}.txt')
+    except FileNotFoundError:
+        print("Ошибка: Один из файлов не найден.")
+    except Exception as e:
+        print("Произошла ошибка при переносе данных:", str(e))
 
 def check_numbers(answer):
-    while answer < 1 or answer > 6:
+    while answer < 1 or answer > 7:
         print("ERROR! Ошибка, скорее всего, Вы указали неправильное число.\n"
-              "Введите значение от 1 до 6.\n"
+              "Введите значение от 1 до 7.\n"
               "Выберите действие:\n"
               "___________________________\n"
               "1. Удалить запись.\n"
@@ -232,7 +270,8 @@ def check_numbers(answer):
               "3. Изменить запись.\n"
               "4. Вывести данные.\n"
               "5. Очистить файл.\n"
-              "6. Выход.")
+              "6. Перенос данных.\n"
+              "7. Выход.")
         answer = int(input("___________________________\nВведите номер действия: "))
         loading()
     return answer
